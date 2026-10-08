@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>TSDim – Dimensionnement Solaire</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Google Fonts pour un look moderne -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header-app">
+    <div class="header-brand">
+      <h1>☀️ TS<span>Dim</span></h1>
+      <p id="licenceMsg" class="badge-licence">Vérification de la licence...</p>
+    </div>
+    <nav class="header-nav">
+      <button onclick="enregistrer()" class="btn-nav">💾 Enregistrer</button>
+      <button onclick="ouvrirHistorique()" class="btn-nav btnHistorique">📜 Historique</button>
+      <button onclick="partager()" class="btn-nav">📤 Partager</button>
+      <button onclick="ouvrirAide()" class="btn-nav">❓ Aide</button>
+    </nav>
+  </header>
+
+  <!-- CONTENEUR PRINCIPAL -->
+  <main class="main-container">
+    
+    <!-- SECTION APPAREILS -->
+    <section class="card">
+      <div class="card-header-flex">
+        <h2>⚡ Appareils Électriques</h2>
+        <button class="btn-action primary" onclick="ajouterAppareil()">➕ Ajouter un appareil</button>
+      </div>
+      <div class="table-container">
+        <table id="table">
+          <!-- Le tableau JS s'injectera ici -->
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION PARAMETRES -->
+    <section class="card">
+      <h2>⚙️ Paramètres du Système</h2>
+      <div class="grid-params">
+        <div class="input-group">
+          <label>☀️ Ensoleillement (h/jour)</label>
+          <input type="number" id="soleil" value="6" min="0" max="24">
+        </div>
+        <div class="input-group">
+          <label>🔋 Autonomie (jours)</label>
+          <input type="number" id="autonomie" value="1" min="1">
+        </div>
+        <div class="input-group">
+          <label>📉 Pertes Système</label>
+          <select id="pert">
+            <option value="0.75">25% (Standard)</option>
+            <option value="0.95">5%</option>
+            <option value="0.90">10%</option>
+            <option value="0.85">15%</option>
+            <option value="0.80">20%</option>
+            <option value="0.70">30%</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>🔋 Profondeur de Décharge (DOD)</label>
+          <select id="dod">
+            <option value="80">80% (Recommandé)</option>
+            <option value="50">50%</option>
+            <option value="60">60%</option>
+            <option value="70">70%</option>
+            <option value="90">90%</option>
+          </select>
+        </div>
+      <div class="input-group">
+          <label>⚡ Tension Système (V)</label>
+          <select id="tension" onchange="verifierTension()">
+            <option value="12" selected>12V</option>
+            <option value="24" >24V</option>
+            <option value="48">48V</option>
+          </select>
+        </div>
+
+        <!-- Option cachée par défaut, s'affiche si 48V est choisi -->
+        <div class="input-group" id="blocLithium" style="display: none;">
+          <label>🔋 Capacité Batterie Lithium (48V)</label>
+          <select id="choixLithium">
+            <option value="2.5">2.5 kWh</option>
+            <option value="5">5 kWh</option>
+            <option value="10">10 kWh</option>
+            <option value="15">15 kWh</option>
+            <option value="17.5">17.5 kWh</option>
+            <option value="20">20 kWh</option>
+            <option value="25">25 kWh</option>
+            <option value="50">50 kWh</option>
+            <option value="100">100 kWh</option>
+            <option value="150">150 kWh</option>
+            <option value="215">215 kWh (Max)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>👤 Nom du client</label>
+          <input type="text" id="client" placeholder="Ex: Jean Dupont">
+        </div>
+      </div>
+      
+      <button class="btn-calculate" onclick="calculer()">📊 Lancer le Dimensionnement</button>
+    </section>
+
+    <!-- SECTION CABLE & RESULTATS -->
+    <div class="cable-actions">
+      <button onclick="calculCableSimple()" class="btn-action info">🔌 Calcul Câble PV</button>
+      <button onclick="resetCable()" class="btn-action warning">♻️ Réinitialiser Câble</button>
+    </div>
+
+    <div id="resultat" class="resultat-box">
+      <div class="placeholder-resultat">
+        <p>💡 Configurez vos appareils et cliquez sur "Lancer le Dimensionnement" pour afficher les résultats.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL HISTORIQUE -->
+  <div id="pageHistorique" class="drawer">
+    <div class="drawer-header">
+      <h2>📜 Historique des Devis</h2>
+      <button onclick="fermerHistorique()" class="btn-close">✕</button>
+    </div>
+    <div class="drawer-body" id="listeHistorique"></div>
+  </div>
+
+  <!-- Modal de Réabonnement (Orange Money, Moov, Wave) -->
+  <!-- Fenêtre Modale de Réabonnement (Licence Expirée) -->
+<!-- Fenêtre Modale de Réabonnement -->
+<div id="modalReabonnement" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; padding: 15px;">
+  <div style="background:white; padding:20px; border-radius:12px; width:100%; max-width:400px; text-align:center; box-shadow:0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;">
+    
+    <h2 style="color:#e11d48; margin-top:0; font-size: 1.3rem;">⛔ Licence Expirée</h2>
+    <h3 style="color:#09a8e7; margin-top:0; font-size: 2 rem;">2.000 FCFA</h3>
+    <p style="color:#334155; font-size:0.85rem; margin-bottom: 15px;">
+      Votre période d'abonnement est arrivée à expiration. Choisissez votre mode de paiement :
+    </p>
+
+    <!-- Options de Paiement (Boutons) -->
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <button onclick="afficherPaiement('orange')" style="background:#ff6600; color:white; border:none; padding:12px; border-radius:8px; font-weight:600; cursor:pointer; font-size:0.9rem;">
+        🟠 Payer via Orange Money
+      </button>
+      
+      <button onclick="afficherPaiement('wave')" style="background:#11b8ff; color:white; border:none; padding:12px; border-radius:8px; font-weight:600; cursor:pointer; font-size:0.9rem;">
+        🔷 Payer via Wave
+      </button>
+
+      <button onclick="afficherPaiement('moov')" style="background:#0066cc; color:white; border:none; padding:12px; border-radius:8px; font-weight:600; cursor:pointer; font-size:0.9rem;">
+        🔵 Payer via Moov Money
+      </button>
+    </div>
+
+    <!-- Zone dynamique qui affichera le QR code ou les infos selon le clic -->
+    <div id="zonePaiementDetails" style="margin-top: 20px; display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0; text-align: center;">
+      <!-- Le contenu sera injecté ici par JavaScript -->
+    </div>
+
+    <!-- Assistance -->
+    <div style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 12px;">
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
+        📞 Assistance Technique : <br><strong>+223 60 38 03 24 </strong>
+      </p>
+    </div>
+
+  </div>
+</div>
+  <!-- MODAL AIDE -->
+  <div id="pageAide" class="drawer">
+    <div class="drawer-header">
+      <h2>❓ Guide d'utilisation</h2>
+      <button onclick="fermerAide()" class="btn-close">✕</button>
+    </div>
+    <div class="drawer-body">
+      <h3>📘 Comment utiliser l'application</h3>
+      <p>1. Cliquez sur <strong>Ajouter un appareil</strong> pour renseigner vos équipements (Puissance, Quantité, Heures d'utilisation).</p>
+      <p>2. Ajustez les paramètres d'ensoleillement et de tension selon votre installation.</p>
+      <p>3. Lancez le calcul pour obtenir le nombre exact de panneaux, batteries et la taille de l'onduleur.</p>
+      <p>4. Enregistrez ou partagez directement votre devis professionnel.</p>
+      
+      <p>🔋 <strong>Explication du DOD (Depth Of Discharge)</strong><br>
+      Le DOD représente le pourcentage d’énergie que vous pouvez utiliser dans une batterie.<br>
+      👉 Exemple :<br>
+      - DOD = 50% → vous utilisez seulement la moitié de la batterie<br>
+      - DOD = 80% → vous utilisez 80% de la batterie<br>
+      ⚠️ Plus le DOD est élevé, plus la batterie s’use rapidement.</p>
+
+      <p>📊 <strong>Valeurs recommandées :</strong><br>
+      🔸 Batterie plomb : 50% à 70%<br>
+      🔸 Batterie lithium : 80% à 95%<br>
+      💡 Conseil : Utilisez 80% pour un bon équilibre entre performance et durée de vie.</p>
+
+      <p><u>NB</u>:<br>
+      cosφ (facteur de puissance) est une information complémentaire.<br>
+      Il permet un calcul plus précis en mode avancé, mais n’est pas obligatoire dans ce dimensionnement.<br>
+      🔹 Qu’est-ce que cos φ ?<br>
+      👉 cos φ (cos phi) = facteur de puissance<br>
+      👉 Il indique l’efficacité d’un appareil électrique</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p><strong><h3>☀️ TS<span>Dim</span></h3></strong></p>
+    <p>© 2026 TATA SERVICE  • Contact : +223 60 38 03 24</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
