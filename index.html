@@ -673,7 +673,7 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="licence.js"></script>
+  <script>document.write('<script src="licence.js?t='+Date.now()+'"><\/script>');</script>
 <script>
 var store=(function(){var mem={},ls=null;try{localStorage.setItem('_t','1');localStorage.removeItem('_t');ls=localStorage}catch(e){}function ck(k){try{var m=document.cookie.split('; ');for(var i=0;i<m.length;i++){var p=m[i].split('=');if(p[0]==='ts_'+k)return decodeURIComponent(p.slice(1).join('='))}}catch(e){}return null}function wn(k){try{var o=JSON.parse(window.name||'{}');return (o&&k in o)?o[k]:null}catch(e){return null}}function wset(k,v){try{var o={};try{o=JSON.parse(window.name||'{}')||{}}catch(e){}if(v===null)delete o[k];else o[k]=v;window.name=JSON.stringify(o)}catch(e){}}return{getItem:function(k){var v=null;try{if(ls)v=ls.getItem(k)}catch(e){}if(v===null)v=ck(k);if(v===null)v=wn(k);if(v===null&&k in mem)v=mem[k];return v},setItem:function(k,v){v=String(v);mem[k]=v;try{if(ls)ls.setItem(k,v)}catch(e){}try{document.cookie='ts_'+k+'='+encodeURIComponent(v)+'; max-age=31536000; path=/; SameSite=Lax'}catch(e){}wset(k,v)},removeItem:function(k){delete mem[k];try{if(ls)ls.removeItem(k)}catch(e){}try{document.cookie='ts_'+k+'=; max-age=0; path=/'}catch(e){}wset(k,null)}}})();
 // ============================================================
@@ -1512,7 +1512,7 @@ function entrerSite(){
   var a=document.getElementById('accueil');a.classList.add('sortie');setTimeout(function(){a.style.display='none'},450);
   setTimeout(ouvrirEntreprise,600);
 }
-(function(){var e=document.getElementById('accEssai');if(e)e.textContent='📅 Licence valable jusqu\'au '+DATE_LIMITE.toLocaleDateString('fr-FR')+'.'})();
+(function(){var e=document.getElementById('accEssai');if(e)e.textContent='📅 Licence valable jusqu\'au '+DATE_LIMITE.toLocaleDateString('fr-FR')+' (lue depuis licence.js)'})();
 
 (function(){var e=document.getElementById('entreprise');if(!e)return;try{e.value=store.getItem('tsdim_entreprise')||''}catch(x){}e.addEventListener('input',function(){try{store.setItem('tsdim_entreprise',e.value)}catch(x){}})})();
 
