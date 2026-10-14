@@ -673,16 +673,14 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script>
+  <script src="licence.js"></script>
+<script>
 var store=(function(){var mem={},ls=null;try{localStorage.setItem('_t','1');localStorage.removeItem('_t');ls=localStorage}catch(e){}function ck(k){try{var m=document.cookie.split('; ');for(var i=0;i<m.length;i++){var p=m[i].split('=');if(p[0]==='ts_'+k)return decodeURIComponent(p.slice(1).join('='))}}catch(e){}return null}function wn(k){try{var o=JSON.parse(window.name||'{}');return (o&&k in o)?o[k]:null}catch(e){return null}}function wset(k,v){try{var o={};try{o=JSON.parse(window.name||'{}')||{}}catch(e){}if(v===null)delete o[k];else o[k]=v;window.name=JSON.stringify(o)}catch(e){}}return{getItem:function(k){var v=null;try{if(ls)v=ls.getItem(k)}catch(e){}if(v===null)v=ck(k);if(v===null)v=wn(k);if(v===null&&k in mem)v=mem[k];return v},setItem:function(k,v){v=String(v);mem[k]=v;try{if(ls)ls.setItem(k,v)}catch(e){}try{document.cookie='ts_'+k+'='+encodeURIComponent(v)+'; max-age=31536000; path=/; SameSite=Lax'}catch(e){}wset(k,v)},removeItem:function(k){delete mem[k];try{if(ls)ls.removeItem(k)}catch(e){}try{document.cookie='ts_'+k+'=; max-age=0; path=/'}catch(e){}wset(k,null)}}})();
-// Durée de l'essai : 1 an (365 jours) (modifier le nombre pour changer)
-const DUREE_ESSAI_MS = 365 * 24 * 60 * 60 * 1000;
-let DATE_LIMITE = null;
-function chargerDebut() {
-  const d = parseInt(store.getItem("tsdim_debut_v4"), 10);
-  DATE_LIMITE = d ? new Date(d + DUREE_ESSAI_MS) : null;
-}
-chargerDebut();
+// ============================================================
+// DATE D'EXPIRATION DE LA LICENCE : A MODIFIER CHAQUE MOIS
+// Changez seulement la date entre guillemets (AAAA-MM-JJ)
+// ============================================================
+function chargerDebut() {}
 function checkLicence() {
   const today = new Date();
   const msgDiv = document.getElementById('licenceMsg');
@@ -1509,13 +1507,12 @@ setInterval(function(){try{checkLicence()}catch(e){}},1000);
 
 function entrerSite(){
   try{
-    if(!parseInt(store.getItem('tsdim_debut_v4'),10)){store.setItem('tsdim_debut_v4',String(Date.now()))}
     chargerDebut();checkLicence();
   }catch(e){}
   var a=document.getElementById('accueil');a.classList.add('sortie');setTimeout(function(){a.style.display='none'},450);
   setTimeout(ouvrirEntreprise,600);
 }
-(function(){var m=Math.round(DUREE_ESSAI_MS/60000),t=m>=525600?Math.round(m/525600)+' an':(m>=1440?Math.round(m/1440)+' jours':m+' minute'+(m>1?'s':''));var e=document.getElementById('accEssai');if(e)e.textContent='⏳ Essai gratuit de '+t+', qui démarre quand vous entrez.'})();
+(function(){var e=document.getElementById('accEssai');if(e)e.textContent='📅 Licence valable jusqu\'au '+DATE_LIMITE.toLocaleDateString('fr-FR')+'.'})();
 
 (function(){var e=document.getElementById('entreprise');if(!e)return;try{e.value=store.getItem('tsdim_entreprise')||''}catch(x){}e.addEventListener('input',function(){try{store.setItem('tsdim_entreprise',e.value)}catch(x){}})})();
 
